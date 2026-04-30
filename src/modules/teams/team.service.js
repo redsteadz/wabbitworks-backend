@@ -99,16 +99,6 @@ const remove = async (id, userId) => {
   return { message: 'Team deleted successfully' };
 };
 
-// Get team members
-const getMembers = async (teamId) => {
-  const team = await TeamModel.findById(teamId);
-  if (!team) {
-    throw ApiError.notFound('Team not found');
-  }
-
-  return membershipService.findByTeam(teamId);
-};
-
 module.exports = {
   create,
   findById,
@@ -116,5 +106,4 @@ module.exports = {
   findByUser,
   update,
   remove,
-  getMembers,
 };
