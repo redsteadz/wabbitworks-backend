@@ -18,6 +18,7 @@ build/
 out/
 bin/
 obj/
+uploads/
 
 *.log
 npm-debug.log*

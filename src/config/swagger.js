@@ -1,9 +1,10 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 const env = require('./env');
+const { enhanceSwaggerSpec } = require('./swagger.enhancements');
 
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: '3.0.3',
     info: {
       title: 'Team Task Manager API',
       version: '1.0.0',
@@ -135,6 +136,32 @@ After logging in, the session cookie is automatically sent with each request.
               minLength: 1,
               maxLength: 100,
               example: 'Doe',
+            },
+            avatar_url: {
+              type: 'string',
+              format: 'uri',
+              nullable: true,
+              maxLength: 500,
+              example: 'https://example.com/avatar.jpg',
+              description: 'Optional profile avatar URL',
+            },
+          },
+        },
+        UpdateAvatarRequest: {
+          type: 'object',
+          properties: {
+            avatar: {
+              type: 'string',
+              format: 'binary',
+              description: 'Image file to upload. Takes precedence over avatar_url.',
+            },
+            avatar_url: {
+              type: 'string',
+              format: 'uri',
+              maxLength: 500,
+              example: 'https://example.com/avatar.jpg',
+              nullable: true,
+              description: 'Optional remote avatar image URL when not uploading a file.',
             },
           },
         },
@@ -581,6 +608,6 @@ After logging in, the session cookie is automatically sent with each request.
   ],
 };
 
-const swaggerSpec = swaggerJsdoc(options);
+const swaggerSpec = enhanceSwaggerSpec(swaggerJsdoc(options));
 
 module.exports = swaggerSpec;
