@@ -3,45 +3,16 @@ const catchAsync = require('../../utils/catchAsync');
 
 /**
  * Get team members
- * * @route GET /api/teams/:teamId/members
+ * @route GET /api/teams/:teamId/members
  */
-const getMembers = async (req, res, next) => {
-
-  try {
-    const { teamId } = req.params;
-    const userId = req.user.id;
-    
-    const members = await membershipService.getTeamMembers(teamId, userId);
-
-    res.json(
-      ApiResponse.success('Members retrieved successfully', {
-        members,
-      })
-    );
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Add member to team
- * @route POST /api/teams/:teamId/members
- */
-const addMember = catchAsync(async (req, res) => {
+const getMembers = catchAsync(async (req, res) => {
   const { teamId } = req.params;
-  const { email, role } = req.body;
+  
+  const members = await membershipService.getTeamMembers(teamId);
 
-  const membership = await membershipService.addMember(
-    teamId,
-    email,
-    role,
-    req.user.id
-  );
-
-  res.status(201).json({
+  res.json({
     success: true,
-    message: 'Member added successfully',
-    data: { membership },
+    data: { members },
   });
 });
 
@@ -54,10 +25,10 @@ const updateRole = catchAsync(async (req, res) => {
   const { role } = req.body;
 
   const membership = await membershipService.updateRole(
+    teamId,
     memberId,
     role,
-    req.user.id,
-    teamId
+    req.user.id
   );
 
   res.json({
@@ -74,7 +45,7 @@ const updateRole = catchAsync(async (req, res) => {
 const removeMember = catchAsync(async (req, res) => {
   const { teamId, memberId } = req.params;
 
-  await membershipService.removeMember(memberId, req.user.id, teamId);
+  await membershipService.removeMember(teamId, memberId, req.user.id);
 
   res.json({
     success: true,
@@ -99,7 +70,6 @@ const leaveTeam = catchAsync(async (req, res) => {
 
 module.exports = {
   getMembers,
-  addMember,
   updateRole,
   removeMember,
   leaveTeam,

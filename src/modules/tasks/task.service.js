@@ -1,7 +1,10 @@
 const TaskModel = require('./task.model');
 const membershipService = require('../memberships/membership.service');
+const notificationService = require('../notifications/notification.service');
+const userService = require('../users/user.service');
 const ApiError = require('../../utils/ApiError');
-const { MEMBERSHIP_STATUS, TASK_STATUS } = require('../../utils/constants');
+const { MEMBERSHIP_STATUS, TASK_STATUS, NOTIFICATION_TYPE } = require('../../utils/constants');
+const env = require('../../config/env');
 
 // Create a new task
 const create = async (taskData, userId) => {
@@ -27,7 +30,32 @@ const create = async (taskData, userId) => {
     created_by: userId,
   });
 
-  return TaskModel.findByIdWithDetails(task.id);
+  const fullTask = await TaskModel.findByIdWithDetails(task.id);
+
+  // Send notification if assigned to someone else
+  if (taskData.assigned_to && taskData.assigned_to !== userId) {
+    await notificationService.create({
+      userId: taskData.assigned_to,
+      actorId: userId,
+      type: NOTIFICATION_TYPE.TASK_ASSIGNED,
+      title: `New Task: ${task.title}`,
+      message: `You have been assigned a new task: ${task.title}`,
+      metadata: {
+        taskId: task.id,
+        taskTitle: task.title,
+        taskDescription: task.description,
+        teamId: taskData.team_id,
+        teamName: fullTask.team_name,
+        priority: task.priority,
+        dueDate: task.due_date,
+        taskUrl: `${env.frontend.url}/tasks/${task.id}`,
+      },
+      actionUrl: `${env.frontend.url}/tasks/${task.id}`,
+      sendEmail: true,
+    });
+  }
+
+  return fullTask;
 };
 
 // Get task by ID
@@ -85,8 +113,12 @@ const update = async (id, taskData, userId) => {
     throw ApiError.forbidden('You are not a member of this team');
   }
 
+  // Check if assignee is changing
+  const assigneeChanged = taskData.assigned_to && 
+    taskData.assigned_to !== task.assigned_to;
+
   // If reassigning, verify new assignee is a team member
-  if (taskData.assigned_to && taskData.assigned_to !== task.assigned_to) {
+  if (assigneeChanged) {
     const assigneeMembership = await membershipService.findByUserAndTeam(
       taskData.assigned_to,
       task.team_id
@@ -97,7 +129,55 @@ const update = async (id, taskData, userId) => {
   }
 
   await TaskModel.update(id, taskData);
-  return TaskModel.findByIdWithDetails(id);
+  const updatedTask = await TaskModel.findByIdWithDetails(id);
+
+  // Send notification if assigned to a new person
+  if (assigneeChanged && taskData.assigned_to !== userId) {
+    await notificationService.create({
+      userId: taskData.assigned_to,
+      actorId: userId,
+      type: NOTIFICATION_TYPE.TASK_ASSIGNED,
+      title: `Task Assigned: ${updatedTask.title}`,
+      message: `You have been assigned to task: ${updatedTask.title}`,
+      metadata: {
+        taskId: id,
+        taskTitle: updatedTask.title,
+        taskDescription: updatedTask.description,
+        teamId: task.team_id,
+        teamName: updatedTask.team_name,
+        priority: updatedTask.priority,
+        dueDate: updatedTask.due_date,
+        taskUrl: `${env.frontend.url}/tasks/${id}`,
+      },
+      actionUrl: `${env.frontend.url}/tasks/${id}`,
+      sendEmail: true,
+    });
+  }
+
+  // Send notification if task was marked completed
+  if (taskData.status === TASK_STATUS.COMPLETED && task.status !== TASK_STATUS.COMPLETED) {
+    // Notify task creator if different from the person who completed it
+    if (task.created_by !== userId) {
+      await notificationService.create({
+        userId: task.created_by,
+        actorId: userId,
+        type: NOTIFICATION_TYPE.TASK_COMPLETED,
+        title: `Task Completed: ${updatedTask.title}`,
+        message: `Task "${updatedTask.title}" has been marked as completed`,
+        metadata: {
+          taskId: id,
+          taskTitle: updatedTask.title,
+          teamId: task.team_id,
+          teamName: updatedTask.team_name,
+          taskUrl: `${env.frontend.url}/tasks/${id}`,
+        },
+        actionUrl: `${env.frontend.url}/tasks/${id}`,
+        sendEmail: false, // In-app only for completion
+      });
+    }
+  }
+
+  return updatedTask;
 };
 
 // Delete task

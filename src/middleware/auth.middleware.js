@@ -10,10 +10,15 @@ const isAuthenticated = (req, res, next) => {
   throw ApiError.unauthorized('Please log in to access this resource');
 };
 
+// Helper to get team ID from various param names
+const getTeamId = (req) => {
+  return req.params.teamId || req.params.id;
+};
+
 // Middleware to check if user is a member of a team
 const isTeamMember = async (req, res, next) => {
   try {
-    const teamId = req.params.id;
+    const teamId = getTeamId(req);
     const userId = req.user.id;
 
     if (!teamId) {
@@ -36,7 +41,7 @@ const isTeamMember = async (req, res, next) => {
 // Middleware to check if user is team owner
 const isTeamOwner = async (req, res, next) => {
   try {
-    const teamId = req.params.teamId || req.params.id;
+    const teamId = getTeamId(req);
     const userId = req.user.id;
 
     if (!teamId) {
@@ -59,7 +64,7 @@ const isTeamOwner = async (req, res, next) => {
 // Middleware to check if user is team owner or admin
 const isTeamAdmin = async (req, res, next) => {
   try {
-    const teamId = req.params.teamId || req.params.id;
+    const teamId = getTeamId(req);
     const userId = req.user.id;
 
     if (!teamId) {
