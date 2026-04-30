@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitation Declined</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #4F46E5;
+    }
+    h1 {
+      color: #1a1a1a;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    p {
+      color: #666;
+      margin-bottom: 15px;
+    }
+    .info-box {
+      background-color: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+      text-align: center;
+    }
+    .info-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    .team-name {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ef4444;
+    }
+    .member-name {
+      color: #666;
+      font-size: 16px;
+    }
+    .button {
+      display: inline-block;
+      padding: 14px 32px;
+      background-color: #4F46E5;
+      color: #ffffff !important;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Team Project</div>
+    </div>
+    
+    <h1>Invitation Declined</h1>
+    
+    <p>Hi {{inviterName}},</p>
+    
+    <p><strong>{{declinedUserName}}</strong> has declined your invitation to join:</p>
+    
+    <div class="info-box">
+      <div class="info-icon">✗</div>
+      <div class="team-name">{{teamName}}</div>
+      <div class="member-name">{{declinedUserName}} declined the {{role}} invitation</div>
+    </div>
+    
+    <p>You can send another invitation later if needed.</p>
+    
+    <div style="text-align: center;">
+      <a href="{{teamUrl}}" class="button">Manage Team</a>
+    </div>
+    
+    <div class="footer">
+      <p>© {{year}} Team Project. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

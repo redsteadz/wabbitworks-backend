@@ -18,6 +18,10 @@ const hashPassword = async (password) => {
  * @returns {Promise<boolean>} - True if match, false otherwise
  */
 const comparePassword = async (password, hash) => {
+  if (!hash) {
+    return false;
+  }
+
   return bcrypt.compare(password, hash);
 };
 

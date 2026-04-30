@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Invitation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #4F46E5;
+    }
+    h1 {
+      color: #1a1a1a;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    p {
+      color: #666;
+      margin-bottom: 15px;
+    }
+    .team-info {
+      background-color: #f3f4f6;
+      border-left: 4px solid #4F46E5;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .team-name {
+      font-size: 20px;
+      font-weight: bold;
+      color: #4F46E5;
+      margin-bottom: 5px;
+    }
+    .inviter {
+      color: #666;
+      font-size: 14px;
+    }
+    .buttons {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .button {
+      display: inline-block;
+      padding: 14px 32px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      margin: 0 10px;
+    }
+    .button-accept {
+      background-color: #10b981;
+      color: #ffffff !important;
+    }
+    .button-decline {
+      background-color: #ef4444;
+      color: #ffffff !important;
+    }
+    .button-view {
+      background-color: #4F46E5;
+      color: #ffffff !important;
+    }
+    .message-box {
+      background-color: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+    }
+    .expire-notice {
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Team Project</div>
+    </div>
+    
+    <h1>You've Been Invited to Join a Team!</h1>
+    
+    <p>Hi {{invitedUserName}},</p>
+    
+    <p><strong>{{inviterName}}</strong> has invited you to join their team:</p>
+    
+    <div class="team-info">
+      <div class="team-name">{{teamName}}</div>
+      <div class="inviter">Invited by: {{inviterName}} ({{inviterEmail}})</div>
+      <div class="inviter">Role: <strong>{{role}}</strong></div>
+    </div>
+    
+    {{#if message}}
+    <div class="message-box">
+      "{{message}}"
+    </div>
+    {{/if}}
+    
+    <p>Accept this invitation to collaborate with your team members on tasks and projects.</p>
+    
+    <div class="buttons">
+      <a href="{{acceptUrl}}" class="button button-accept">✓ Accept Invitation</a>
+      <a href="{{declineUrl}}" class="button button-decline">✗ Decline</a>
+    </div>
+    
+    <div style="text-align: center; margin-top: 10px;">
+      <a href="{{viewUrl}}" class="button button-view">View Invitation Details</a>
+    </div>
+    
+    <div class="expire-notice">
+      This invitation will expire on {{expiresAt}}
+    </div>
+    
+    <div class="footer">
+      <p>© {{year}} Team Project. All rights reserved.</p>
+      <p>If you weren't expecting this invitation, you can safely ignore this email.</p>
+    </div>
+  </div>
+</body>
+</html>

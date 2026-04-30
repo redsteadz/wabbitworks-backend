@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Email</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #4F46E5;
+    }
+    h1 {
+      color: #1a1a1a;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    p {
+      color: #666;
+      margin-bottom: 15px;
+    }
+    .button {
+      display: inline-block;
+      padding: 14px 32px;
+      background-color: #4F46E5;
+      color: #ffffff !important;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+    .button:hover {
+      background-color: #4338CA;
+    }
+    .code-box {
+      background-color: #f3f4f6;
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
+    }
+    .code {
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 8px;
+      color: #4F46E5;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+    }
+    .expire-notice {
+      background-color: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Team Project</div>
+    </div>
+    
+    <h1>Verify Your Email Address</h1>
+    
+    <p>Hi {{firstName}},</p>
+    
+    <p>Welcome to Team Project! Please verify your email address to complete your registration and unlock all features.</p>
+    
+    <div style="text-align: center;">
+      <a href="{{verificationUrl}}" class="button">Verify Email Address</a>
+    </div>
+    
+    <p>Or use this verification code:</p>
+    
+    <div class="code-box">
+      <div class="code">{{verificationCode}}</div>
+    </div>
+    
+    <div class="expire-notice">
+      This link and code will expire in <strong>{{expiresIn}} hours</strong>.
+    </div>
+    
+    <p>If you didn't create an account with Team Project, you can safely ignore this email.</p>
+    
+    <div class="footer">
+      <p>© {{year}} Team Project. All rights reserved.</p>
+      <p>This is an automated message, please do not reply.</p>
+    </div>
+  </div>
+</body>
+</html>
