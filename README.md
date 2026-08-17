@@ -1,370 +1,72 @@
-# Team Task Manager API
+# WabbitWorks Backend
 
-Backend REST API for collaborative task management, team membership, invitations, notifications, and account security.
+WabbitWorks Backend is an Express and PostgreSQL API for a team task manager. It provides account authentication, team membership, task workflows, invitations, notifications, and generated API documentation.
 
-## API Version
-v1.0.0
+## Features
 
-## Highlights
+- Local email/password authentication and Google OAuth 2.0
+- PostgreSQL-backed sessions
+- Email verification and password-reset workflows
+- Teams, memberships, roles, and invitation management
+- Task creation, assignment, status, priority, and due-date workflows
+- In-app notifications and email delivery
+- Scheduled overdue, due-soon, and cleanup jobs
+- Request validation, rate limiting, secure headers, and parameter-pollution protection
+- OpenAPI, Swagger UI, and Postman collection output
+- Jest service tests
 
-- Session-based authentication with Passport local strategy and Google OAuth
-- Email verification, password reset, and email change confirmation
-- Team, membership, task, invitation, and notification workflows
-- Dashboard views for due soon and overdue tasks
-- Swagger/OpenAPI docs generated from route annotations, with downloadable OpenAPI JSON and Postman collection exports
-- PostgreSQL persistence with Knex migrations and seed data
-- Security hardening with Helmet, CORS, HPP, Joi validation, sanitize-html, and rate limiting
+## Stack
 
-## Architecture
+Node.js 18+, Express 5, PostgreSQL, Knex, Passport, Joi, Nodemailer, Handlebars, Jest, and Supertest.
 
-The codebase follows a simple controller-service-model structure:
+## Quick start
 
-```text
-src/
-  app.js
-  server.js
-  routes.js
-  config/
-  middleware/
-  modules/
-  services/
-  templates/emails/
-  utils/
-  jobs/
-migrations/
-seeds/
-```
+Start PostgreSQL and create a database matching your local configuration, then:
 
-| Area | Responsibility |
-| --- | --- |
-| `src/server.js` | Starts the server, checks the database connection, and handles graceful shutdown. |
-| `src/app.js` | Configures Express middleware, Swagger UI, API routes, and global error handling. |
-| `src/config/` | Environment parsing, database, session store, Passport, email transport, and Swagger config. |
-| `src/middleware/` | Authentication guards, request validation, sanitization, rate limiting, and error conversion. |
-| `src/modules/<domain>/` | Domain-specific controller, service, model, route, and validation files. |
-| `src/services/` | Shared services such as email delivery. |
-| `src/templates/emails/` | Handlebars HTML templates for account and workflow emails. |
-| `src/jobs/` | Background maintenance jobs such as cleanup. |
-| `src/utils/` | Reusable helpers, constants, errors, bcrypt, and token utilities. |
-| `migrations/` and `seeds/` | Database schema and demo data. |
-
-## Tech Stack
-
-| Layer | Tools |
-| --- | --- |
-| Runtime | Node.js 18+ |
-| Framework | Express 5 |
-| Database | PostgreSQL |
-| Query builder | Knex |
-| Authentication | Passport local strategy, Passport Google OAuth 2.0 |
-| Session store | `express-session` with `connect-pg-simple` in non-development environments |
-| Validation | Joi |
-| Email | Nodemailer + Handlebars templates |
-| Security | Helmet, HPP, `express-rate-limit`, `sanitize-html`, bcrypt |
-| API docs | Swagger UI + `swagger-jsdoc` |
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18 or newer
-- PostgreSQL database
-- SMTP credentials if you want email flows to send real mail
-- Google OAuth credentials if you want Google sign-in
-
-### Install
-
-```bash
-git clone <repo-url>
-cd <repo-folder>
+~~~bash
+git clone https://github.com/redsteadz/wabbitworks-backend.git
+cd wabbitworks-backend
 npm install
-```
+cp .env.example .env
+~~~
 
-### Environment
+Update the database and session values in `.env`, then run:
 
-Copy `.env.example` to `.env` and update the values.
-
-Core values:
-
-- `NODE_ENV`
-- `PORT`
-- `FRONTEND_URL`
-
-Database values:
-
-- `DB_HOST`
-- `DB_PORT`
-- `DB_NAME`
-- `DB_USER`
-- `DB_PASSWORD`
-- `DATABASE_URL`
-
-Session and security:
-
-- `SESSION_SECRET`
-- `SESSION_MAX_AGE`
-- `BCRYPT_SALT_ROUNDS`
-
-Email:
-
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_SECURE`
-- `SMTP_USER`
-- `SMTP_PASSWORD`
-- `EMAIL_FROM`
-
-Token lifetimes:
-
-- `VERIFICATION_TOKEN_EXPIRES`
-- `RESET_TOKEN_EXPIRES`
-
-Frontend links used inside emails:
-
-- `FRONTEND_VERIFY_URL`
-- `FRONTEND_RESET_URL`
-
-Google OAuth:
-
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
-- `GOOGLE_CALLBACK_URL`
-
-Important: `GOOGLE_CALLBACK_URL` must point to the backend callback route, for example `http://localhost:5000/api/auth/google/callback`.
-
-### Database
-
-Run the schema migrations first, then seed demo data if you want sample records.
-
-```bash
+~~~bash
 npm run migrate
 npm run seed
-```
-
-Useful database scripts:
-
-| Script | Description |
-| --- | --- |
-| `npm run migrate` | Run all pending migrations. |
-| `npm run migrate:make` | Create a new migration file. |
-| `npm run migrate:rollback` | Roll back the latest migration. |
-| `npm run migrate:status` | Show migration status. |
-| `npm run seed` | Run all seed files. |
-| `npm run seed:make` | Create a new seed file. |
-| `npm run db:reset` | Roll back all migrations, re-run them, then seed the database. |
-
-### Run
-
-```bash
 npm run dev
-```
+~~~
 
-For production:
+The API defaults to `http://localhost:5000`.
 
-```bash
-npm start
-```
+## API areas
 
-### Demo Data
-
-The main seed file creates:
-
-- `john@example.com`
-- `jane@example.com`
-- `bob@example.com`
-
-All demo users use the password `password123`.
-
-## API Base
-
-| Route | Description |
+| Base path | Responsibility |
 | --- | --- |
-| `GET /` | Root service info and docs link. |
-| `GET /api/health` | Health check endpoint. |
-| `GET /api/docs` | Swagger UI. |
-| `GET /api/docs.json` | OpenAPI JSON spec. Add `?download=1` to download it as a file. |
-| `GET /api/docs/postman.json` | Generated Postman collection with grouped endpoints and payload samples. Add `?download=1` to download it as a file. |
+| `/api/auth` | Registration, sessions, email verification, password reset, and Google OAuth |
+| `/api/teams` | Teams, members, team invitations, and team tasks |
+| `/api/tasks` | Task operations |
+| `/api/invitations` | Invitation acceptance and management |
+| `/api/notifications` | Notification listing and state changes |
+| `/api/health` | Service health check |
 
-All application routes are mounted under `/api`.
+Interactive and machine-readable documentation is available while the server is running:
 
-The generated Postman collection uses `baseUrl` and `cookieSessionId` variables so you can point it at any backend and reuse your authenticated session cookie.
+- Swagger UI: `/api/docs`
+- OpenAPI JSON: `/api/docs.json`
+- Postman collection: `/api/docs/postman.json`
 
-## Domain Rules
+## Useful commands
 
-| Area | Values and behavior |
-| --- | --- |
-| Task status | `todo`, `in_progress`, `review`, `completed` |
-| Task priority | `low`, `medium`, `high`, `urgent` |
-| Membership role | `owner`, `admin`, `member` |
-| Membership status | `pending`, `active`, `inactive` |
-| Invitation status | `pending`, `accepted`, `declined`, `cancelled`; old pending invitations are expired by the cleanup job. |
-| Notification types | `team_invitation`, `invitation_accepted`, `invitation_declined`, `task_assigned`, `task_updated`, `task_completed`, `task_comment`, `member_added`, `member_removed`, `role_changed`, `due_date_reminder`, `task_overdue` |
+~~~bash
+npm test                 # run the Jest test suite
+npm run migrate          # apply migrations
+npm run migrate:rollback # roll back the latest migration
+npm run seed             # load seed data
+npm run db:reset         # rebuild and reseed the database
+~~~
 
-## Endpoints
+## Configuration
 
-### Auth
-
-| Method | Path | Access | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/auth/google` | Public | Starts Google OAuth login. |
-| `GET` | `/api/auth/google/callback` | Public | Handles the OAuth callback, creates or links the account, then redirects to the frontend. |
-| `POST` | `/api/auth/register` | Public | Creates a user, hashes the password, sends a verification email, and logs the user in. |
-| `POST` | `/api/auth/login` | Public | Logs in with email and password. |
-| `GET` | `/api/auth/status` | Public | Returns the current auth state and user if a session exists. |
-| `GET` | `/api/auth/verify-email?token=...` | Public | Verifies a token from the email link. Add `type=email-change` to confirm a pending email change. |
-| `POST` | `/api/auth/verify-email` | Authenticated | Verifies the 6-digit code for the current logged-in user. |
-| `POST` | `/api/auth/resend-verification` | Authenticated | Resends the verification email. |
-| `POST` | `/api/auth/forgot-password` | Public | Sends a password reset email if the account exists. |
-| `GET` | `/api/auth/reset-password?token=...` | Public | Validates a password reset token. |
-| `POST` | `/api/auth/reset-password` | Public | Resets the password with a valid token and invalidates existing sessions. |
-| `POST` | `/api/auth/logout` | Authenticated | Ends the current session. |
-| `POST` | `/api/auth/logout-all` | Authenticated | Ends all sessions. Accepts `keepCurrent` in the body. |
-| `POST` | `/api/auth/refresh` | Authenticated | Touches the session to extend expiry. |
-| `GET` | `/api/auth/me` | Authenticated | Returns the current user profile plus team memberships. |
-| `PATCH` | `/api/auth/me/avatar` | Authenticated | Updates the current user's profile avatar image from an uploaded file or URL. Send `multipart/form-data` with an `avatar` file field or JSON with `avatar_url`. |
-| `DELETE` | `/api/auth/me/avatar` | Authenticated | Removes the current user's profile avatar. |
-| `POST` | `/api/auth/change-password` | Authenticated | Changes the password for the current user. |
-| `POST` | `/api/auth/change-email` | Authenticated | Starts the email change flow and sends a confirmation link to the new address. |
-| `GET` | `/api/auth/sessions` | Authenticated | Lists active sessions with IP, user agent, device, browser, OS, and timestamps. |
-| `DELETE` | `/api/auth/sessions/:sessionId` | Authenticated | Terminates one of the current user's sessions. |
-
-### Teams
-
-| Method | Path | Access | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/teams` | Authenticated | Lists the current user's teams with member and task counts. |
-| `POST` | `/api/teams` | Authenticated | Creates a team and automatically adds the creator as owner. |
-| `GET` | `/api/teams/:id` | Authenticated, team member | Returns team details with counts. |
-| `PUT` | `/api/teams/:id` | Authenticated, owner | Updates team metadata. |
-| `DELETE` | `/api/teams/:id` | Authenticated, owner/creator | Soft-deletes a team. |
-| `POST` | `/api/teams/:id/members/leave` | Authenticated, team member | Leaves the team. Owners cannot leave without transferring ownership first. |
-| `GET` | `/api/teams/:id/members` | Authenticated, team member | Lists team members. |
-| `PUT` | `/api/teams/:id/members/:memberId` | Authenticated, owner | Changes a member role. |
-| `DELETE` | `/api/teams/:id/members/:memberId` | Authenticated, owner/admin | Removes a member from the team. |
-
-### Tasks
-
-| Method | Path | Access | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/tasks` | Authenticated | Lists the current user's tasks. Filters: `team_id`, `status`, `priority`, `assigned_to_me`, `search`. |
-| `POST` | `/api/tasks` | Authenticated, team member | Creates a task. The assignee must also belong to the team. |
-| `GET` | `/api/tasks/:id` | Authenticated, team member | Returns task details. |
-| `PUT` | `/api/tasks/:id` | Authenticated, team member | Updates task fields, handles reassignment, and marks completion timestamps. |
-| `DELETE` | `/api/tasks/:id` | Authenticated, team member | Soft-deletes a task. |
-| `GET` | `/api/tasks/dashboard` | Authenticated | Returns task counts by status plus due-soon and overdue lists. |
-| `GET` | `/api/tasks/due-soon?days=3` | Authenticated | Returns tasks due within the next `days` days. |
-| `GET` | `/api/tasks/overdue` | Authenticated | Returns overdue tasks. |
-| `GET` | `/api/teams/:teamId/tasks` | Authenticated, team member | Team-scoped task list with `status`, `priority`, `assigned_to`, `search`, `sortBy`, and `sortOrder` filters. |
-
-### Invitations
-
-| Method | Path | Access | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/invitations/public/:id/accept` | Public | Accepts an invitation from an email link without authentication. |
-| `GET` | `/api/invitations/public/:id/decline` | Public | Declines an invitation from an email link without authentication. |
-| `GET` | `/api/invitations/pending/count` | Authenticated | Returns the number of pending invitations for the current user. |
-| `GET` | `/api/invitations/received` | Authenticated | Lists invitations received by the current user. Filter with `status`. |
-| `GET` | `/api/invitations/sent` | Authenticated | Lists invitations sent by the current user. Filter with `status` and `team_id`. |
-| `GET` | `/api/invitations/:id` | Authenticated | Returns invitation details if the user is the invitee, inviter, or a team admin/owner. |
-| `POST` | `/api/invitations/:id/accept` | Authenticated | Accepts an invitation as the logged-in user. |
-| `POST` | `/api/invitations/:id/decline` | Authenticated | Declines an invitation as the logged-in user. |
-| `POST` | `/api/invitations/:id/cancel` | Authenticated | Cancels a pending invitation. |
-| `POST` | `/api/invitations/:id/resend` | Authenticated | Resends a pending invitation. |
-| `GET` | `/api/teams/:teamId/invitations` | Authenticated, team admin/owner | Lists team invitations. |
-| `POST` | `/api/teams/:teamId/invitations` | Authenticated, team admin/owner | Creates a new invitation for a team member. |
-
-### Notifications
-
-| Method | Path | Access | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/notifications` | Authenticated | Lists notifications with pagination and filters: `page`, `limit`, `is_read`, `type`. |
-| `GET` | `/api/notifications/unread/count` | Authenticated | Returns the unread notification count. |
-| `GET` | `/api/notifications/:id` | Authenticated | Returns one notification. |
-| `PUT` | `/api/notifications/:id/read` | Authenticated | Marks a notification as read. |
-| `PUT` | `/api/notifications/:id/unread` | Authenticated | Marks a notification as unread. |
-| `PUT` | `/api/notifications/read-all` | Authenticated | Marks all notifications as read. |
-| `DELETE` | `/api/notifications/:id` | Authenticated | Deletes one notification. |
-| `DELETE` | `/api/notifications` | Authenticated | Deletes all notifications for the current user. |
-| `GET` | `/api/notifications/preferences` | Authenticated | Returns the current user's notification preferences. |
-| `PUT` | `/api/notifications/preferences` | Authenticated | Updates email and in-app notification toggles. |
-
-## Data Model
-
-| Table | Purpose |
-| --- | --- |
-| `users` | Stores account data, passwords, profile avatar URLs, Google IDs, verification state, pending email changes, last login time, and active/inactive status. |
-| `teams` | Stores team records, creator, soft-delete state, and timestamps. |
-| `memberships` | Joins users to teams with role, status, invitation linkage, and join timestamps. |
-| `tasks` | Stores task data, assignee, creator, status, priority, due date, completion time, and soft-delete state. |
-| `session` | Stores session payloads plus IP, user agent, device, browser, OS, and expiry metadata. |
-| `verification_tokens` | Stores hashed verification and email-change tokens, codes, expiry, and used timestamps. |
-| `password_reset_tokens` | Stores hashed reset tokens, expiry, used timestamps, and request metadata. |
-| `team_invitations` | Stores invitation lifecycle data, role, status, expiry, message, and response timestamps. |
-| `notifications` | Stores in-app notifications, actor, type, metadata, read state, and email delivery state. |
-| `notification_preferences` | Stores per-user email and in-app notification toggles. |
-
-## Implementation Notes
-
-- `src/app.js` wires up security middleware, CORS with credentials, JSON parsing, HPP protection, Passport, sessions, Swagger UI, routes, and global error handling.
-- `src/server.js` checks the database connection before starting and prints the local API, docs, and health URLs.
-- Sessions use the cookie name `sessionId`. In production, the app sets `trust proxy` and uses secure cookies.
-- Development uses the in-memory session store; non-development environments use PostgreSQL-backed sessions through `connect-pg-simple`.
-- Passport stores the authenticated user id in the session and reloads the user from the database on each request, so avatar changes are reflected on the next authenticated response.
-- Uploaded avatars are served from `/uploads/avatars/...` and the backend keeps the `users.avatar_url` field in sync.
-- `src/config/passport.js` implements both local and Google strategies, links Google accounts by email when needed, and updates last login timestamps.
-- `src/middleware/validation.middleware.js` validates requests with Joi, strips unknown fields, and sanitizes strings with `sanitize-html`.
-- `src/middleware/error.middleware.js` converts thrown errors into a consistent JSON error shape.
-- `src/services/email.service.js` renders Handlebars templates for verification, password reset, email change, welcome, password changed, invitation, and task assignment emails.
-- `src/modules/tasks/task.service.js` creates notifications when tasks are assigned or completed.
-- `src/modules/invitations/invitation.service.js` creates invitations, public accept/decline flows, membership records, and response notifications.
-- `src/modules/notifications/notification.service.js` respects notification preferences and can send email plus in-app notifications.
-- `src/jobs/cleanup.js` removes expired verification tokens, password reset tokens, expired sessions, old read notifications, and old pending invitations. Schedule it with your cron or platform scheduler.
-- OpenAPI documentation is generated from route JSDoc comments, so the Swagger UI stays close to the actual code.
-
-## Notification Emails
-
-The email templates in `src/templates/emails/` are:
-
-- `verification.html`
-- `password-reset.html`
-- `email-change.html`
-- `welcome.html`
-- `password-changed.html`
-- `team-invitation.html`
-- `invitation-accepted.html`
-- `invitation-declined.html`
-- `task-assigned.html`
-
-## API Response Shape
-
-Successful responses usually look like this:
-
-```json
-{
-  "success": true,
-  "message": "Optional message",
-  "data": {}
-}
-```
-
-Errors use the standard `ApiError` format:
-
-```json
-{
-  "success": false,
-  "status": "fail",
-  "message": "Something went wrong"
-}
-```
-
-In development, error responses also include a stack trace.
-
-## Deployment
-
-- `vercel.json` rewrites all incoming requests to `src/server.js`.
-- The app is production-ready on any Node host that can provide PostgreSQL, SMTP, and Google OAuth credentials.
-- Required production values usually include `DATABASE_URL`, `SESSION_SECRET`, `FRONTEND_URL`, SMTP settings, and Google OAuth settings.
-
-## License
-
-ISC
+Use [`.env.example`](.env.example) as the source of truth for database, session, CORS, email, token-expiry, frontend-link, and Google OAuth settings. Replace every placeholder before deployment and keep `.env` out of version control.
